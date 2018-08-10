@@ -1,0 +1,11 @@
+[{
+  "Flight name": "Air India",
+  "Flight number": 1234,
+  "Travel change": 5000
+  
+},
+{
+  "Flight name": "Emirates",
+  "Flight number": 1235,
+  "Travel change": 10000
+}]

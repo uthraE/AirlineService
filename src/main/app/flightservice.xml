@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+    <http:listener-config name="flightservice-httpListenerConfig" host="0.0.0.0" port="9033" doc:name="HTTP Listener Configuration"/>
+    <apikit:config name="flightservice-config" raml="flightservice.raml" consoleEnabled="false" doc:name="Router"/>
+    <http:request-config name="HTTP_Request_Configuration" host="localhost" port="9033" doc:name="HTTP Request Configuration"/>
+    <db:mysql-config name="MySQL_Configuration" host="mylab.cxvvrdbqrrdo.ap-south-1.rds.amazonaws.com" port="3306" user="ab73863" password="pathfinder" database="mylab" doc:name="MySQL Configuration"/>
+    <flow name="flightservice-main">
+        <http:listener config-ref="flightservice-httpListenerConfig" path="/api/*" doc:name="HTTP"/>
+        <apikit:router config-ref="flightservice-config" doc:name="APIkit Router"/>
+        <exception-strategy ref="flightservice-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy"/>
+    </flow>
+    <flow name="flightservice-console">
+        <http:listener config-ref="flightservice-httpListenerConfig" path="/console/*" doc:name="HTTP"/>
+        <apikit:console config-ref="flightservice-config" doc:name="APIkit Console"/>
+    </flow>
+    <flow name="get:/airlines:flightservice-config">
+        <http:listener config-ref="flightservice-httpListenerConfig" path="/airlines" doc:name="HTTP"/>
+        <logger message="Get Airline Details !!!!!" level="INFO" doc:name="Logger"/>
+        <db:select config-ref="MySQL_Configuration" doc:name="Database">
+            <db:parameterized-query><![CDATA[SELECT * FROM Flights_Data]]></db:parameterized-query>
+        </db:select>
+        <byte-array-to-string-transformer doc:name="Byte Array to String"/>
+        <file:outbound-endpoint path="C:\Users\uellappa\Desktop\Mu\flightservice" outputPattern="flightDetails.json" responseTimeout="10000" doc:name="File"/>
+
+    </flow>
+    <flow name="get:/search:flightservice-config">
+        <http:listener config-ref="flightservice-httpListenerConfig" path="/search" allowedMethods="GET" doc:name="HTTP"/>
+        <message-properties-transformer doc:name="Message Properties" scope="invocation">
+            <add-message-property key="sortBy" value="#[message.inboundProperties.'http.query.params'.sortBy]" />
+            <add-message-property key="dst" value="#[message.inboundProperties.'http.query.params'.dst]"/>
+            <add-message-property key="fName" value="#[message.inboundProperties.'http.query.params'.fName]"/>
+            <add-message-property key="fNo" value="#[message.inboundProperties.'http.query.params'.fNo]"/>
+            <add-message-property key="src" value="#[message.inboundProperties.'http.query.params'.src]"/>
+        </message-properties-transformer>
+        <component class="flightservice.SearchPayload" doc:name="Java"/>
+        <set-payload value="#[payload]" doc:name="Set Payload"/>
+        <db:select config-ref="MySQL_Configuration" doc:name="Database">
+            <db:dynamic-query><![CDATA[#[payload]]]></db:dynamic-query>
+        </db:select>
+        <byte-array-to-string-transformer doc:name="Byte Array to String"/>
+
+    </flow>
+    <flow name="post:/airlines/book:flightservice-config">
+        <http:listener config-ref="flightservice-httpListenerConfig" path="/bookandupdate" allowedMethods="POST" doc:name="HTTP"/>
+        <message-properties-transformer scope="invocation" doc:name="Message Properties">
+            <add-message-property key="source" value="#[json:'source']"/>
+            <add-message-property key="destination" value="#[json:'destination']"/>
+            <add-message-property key="flightNumber" value="#[json:'flightNumber']"/>
+            <add-message-property key="flightName" value="#[json:'flightName']"/>
+            <add-message-property key="requestedSeats" value="#[json:'requestedSeats']"/>
+            <add-message-property key="date" value="#[json:'date']"/>
+        </message-properties-transformer>
+        <set-payload value="SELECT * FROM Flights_Data Where SourceLocation='#[flowVars.source]' and Destination='#[flowVars.destination]'
+and FlightNumber='#[flowVars.flightNumber]' and 
+Date='#[flowVars.date]'" doc:name="Set Payload"/>
+        <db:select config-ref="MySQL_Configuration" doc:name="Database">
+            <db:dynamic-query><![CDATA[#[payload]]]></db:dynamic-query>
+        </db:select>
+        <logger message="#[payload.size()]" level="INFO" doc:name="Logger"/>
+        <choice doc:name="Choice">
+            <when expression="#[payload.size() != 0]">
+                <set-variable variableName="availableSeats" value="#[payload[0].'AvailableSeats']" doc:name="Variable"/>
+                <component class="flightservice.SeatValidation" doc:name="Java"/>
+                <set-payload value="UPDATE mylab.Flights_Data SET AvailableSeats = '#[flowVars.finalSeatCount]' WHERE  FlightNumber='#[flowVars.flightNumber]' and Date='#[flowVars.date]'" doc:name="Set Payload"/>
+                <db:update config-ref="MySQL_Configuration" doc:name="Database">
+                    <db:dynamic-query><![CDATA[#[payload]]]></db:dynamic-query>
+                </db:update>
+                <set-payload value="[ { &quot;messgage&quot; : &quot;Ticket booked successfully!!!!&quot; } ]" doc:name="Set Payload"/>
+            </when>
+            <otherwise>
+                <set-payload value="[ 
+{ &quot;messgage&quot; : &quot;No results found!!!!&quot;
+}
+]" doc:name="Set Payload"/>
+            </otherwise>
+        </choice>
+
+    </flow>
+    <apikit:mapping-exception-strategy name="flightservice-apiKitGlobalExceptionMapping">
+        <apikit:mapping statusCode="404">
+            <apikit:exception value="org.mule.module.apikit.exception.NotFoundException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+            <set-payload value="{ &quot;message&quot;: &quot;Resource not found&quot; }" doc:name="Set Payload"/>
+        </apikit:mapping>
+        <apikit:mapping statusCode="405">
+            <apikit:exception value="org.mule.module.apikit.exception.MethodNotAllowedException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+            <set-payload value="{ &quot;message&quot;: &quot;Method not allowed&quot; }" doc:name="Set Payload"/>
+        </apikit:mapping>
+        <apikit:mapping statusCode="415">
+            <apikit:exception value="org.mule.module.apikit.exception.UnsupportedMediaTypeException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+            <set-payload value="{ &quot;message&quot;: &quot;Unsupported media type&quot; }" doc:name="Set Payload"/>
+        </apikit:mapping>
+        <apikit:mapping statusCode="406">
+            <apikit:exception value="org.mule.module.apikit.exception.NotAcceptableException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+            <set-payload value="{ &quot;message&quot;: &quot;Not acceptable&quot; }" doc:name="Set Payload"/>
+        </apikit:mapping>
+        <apikit:mapping statusCode="400">
+            <apikit:exception value="org.mule.module.apikit.exception.BadRequestException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+            <set-payload value="{ &quot;message&quot;: &quot;Bad request&quot; }" doc:name="Set Payload"/>
+        </apikit:mapping>
+    </apikit:mapping-exception-strategy>
+</mule>

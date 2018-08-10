@@ -1,0 +1,63 @@
+#%RAML 1.0
+title: flightservice
+version: v1
+baseUri: http://localhost:9033
+mediaType: application/json
+/airlines:
+ get:
+   displayName: Get Airlines
+   description: Get the airline details from a database
+   responses: 
+     200:
+       description: Successful result with status code 200
+       body: 
+         application/json:
+           example: !include examples/flightDetails.json
+ /book:
+  post:
+    description: To book a flight
+    body: 
+      application/json:
+        example: !include examples/inputJsonForPost.json
+    responses: 
+      200:
+       body: 
+         application/json:
+           example:  [{ messgage : Ticket booked successfully!!!!}]
+         
+/search:
+  get:
+    displayName: Search Results 
+    description: Generate the list of flights based on price, source & destination,flight number and flight name
+    queryParameters: 
+      sortBy:
+       displayName: SortBy
+       type: string
+       description: Parameter value will be either lowPrice or highPrice
+      src:
+       displayName: Source Location
+       type: string
+      dst:
+       displayName: Destination Location
+       type: string
+      fName:
+       displayName: Fight Name
+       type: string
+      fNo:
+       displayName: Flight Number
+       type: integer
+    responses: 
+      200:
+        description: Successful result with status code 200
+        body: 
+          application/json:
+            example: !include examples/searchresults.json
+     
+      400:
+        description: Response with status code 400
+        body: 
+          application/json:
+            example: !include examples/exp400.json
+
+                
+          

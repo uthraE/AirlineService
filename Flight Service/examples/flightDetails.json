@@ -1,0 +1,30 @@
+[{
+  "Flight name": "Air India",
+  "Flight number": 1234,
+  "Status": "active"
+},
+{
+  "Flight name": "Emirates",
+  "Flight number": 1235,
+  "Status": "active"
+},
+{
+  "Flight name": "SpiceJet",
+  "Flight number": 1236,
+  "Status": "active"
+},
+{
+  "Flight name": "Jet Airways",
+  "Flight number": 1237,
+  "Status": "active"
+},
+{
+  "Flight name": "IndiGo",
+  "Flight number": 1238,
+  "Status": "active"
+},
+{
+  "Flight name": "Air Asia",
+  "Flight number": 1239,
+  "Status": "active"
+}]
