@@ -14,6 +14,8 @@ TODO
 
 ## How it works
 
+TODO
+
 ## Licensing
 
 TODO
