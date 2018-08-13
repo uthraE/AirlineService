@@ -1,6 +1,6 @@
 # AirlineService
 Service for airline application
 
-[[https://github.com/uthraE/AirlineService/blob/master/airline.jpg|alt=airline]]
+![alt text](https://github.com/uthraE/AirlineService/blob/master/airline.jpg)
 
 ## About this application
