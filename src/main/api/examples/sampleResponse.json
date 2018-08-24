@@ -1,0 +1,20 @@
+[{
+"TotalSeats": 100,
+"FlightNumber": 1234,
+"Destination": "Australia",
+"AvailableSeats": 2,
+"Price": 38000,
+"FlightName": "Air India",
+"SourceLocation": "Chennai",
+"Date": 1534744800000
+},
+{
+"TotalSeats": 100,
+"FlightNumber": 1234,
+"Destination": "Australia",
+"AvailableSeats": 24,
+"Price": 35000,
+"FlightName": "Air India",
+"SourceLocation": "Chennai",
+"Date": 1534312800000
+}]

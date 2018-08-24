@@ -1,0 +1,64 @@
+[{
+	"TotalSeats": 100,
+	"FlightNumber": 1234,
+	"Destination": "Australia",
+	"AvailableSeats": 2,
+	"Price": 38000,
+	"FlightName": "Air India",
+	"SourceLocation": "Chennai",
+	"Date": 1534744800000
+}, {
+	"TotalSeats": 100,
+	"FlightNumber": 1234,
+	"Destination": "Australia",
+	"AvailableSeats": 23,
+	"Price": 35000,
+	"FlightName": "Air India",
+	"SourceLocation": "Chennai",
+	"Date": 1534312800000
+}, {
+	"TotalSeats": 150,
+	"FlightNumber": 1234,
+	"Destination": "Australia",
+	"AvailableSeats": 17,
+	"Price": 40000,
+	"FlightName": "Air India",
+	"SourceLocation": "Chennai",
+	"Date": 1535342400000
+}, {
+	"TotalSeats": 150,
+	"FlightNumber": 3567,
+	"Destination": "Australia",
+	"AvailableSeats": 20,
+	"Price": 42000,
+	"FlightName": "Jet Airways",
+	"SourceLocation": "Chennai",
+	"Date": 1534737600000
+}, {
+	"TotalSeats": 150,
+	"FlightNumber": 3567,
+	"Destination": "Australia",
+	"AvailableSeats": 7,
+	"Price": 40000,
+	"FlightName": "Jet Airways",
+	"SourceLocation": "Chennai",
+	"Date": 1535331600000
+}, {
+	"TotalSeats": 200,
+	"FlightNumber": 4457,
+	"Destination": "Australia",
+	"AvailableSeats": 50,
+	"Price": 42000,
+	"FlightName": "Emirates",
+	"SourceLocation": "Chennai",
+	"Date": 1534748400000
+}, {
+	"TotalSeats": 200,
+	"FlightNumber": 4457,
+	"Destination": "Australia",
+	"AvailableSeats": 9,
+	"Price": 41000,
+	"FlightName": "Emirates",
+	"SourceLocation": "Chennai",
+	"Date": 1534309200000
+}]

@@ -1,0 +1,10 @@
+{
+  "TotalSeats": "100",
+  "FlightNumber": "1234",
+  "Destination": "Australia",
+  "AvailableSeats": "2",
+  "Price": "38000",
+  "FlightName": "Air India",
+  "SourceLocation": "Chennai",
+  "Date": "2018-08-20 11:30:00.0"
+}

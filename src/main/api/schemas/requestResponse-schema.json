@@ -1,0 +1,99 @@
+{
+  "definitions": {}, 
+  "$schema": "http://json-schema.org/draft-07/schema#", 
+  "$id": "http://example.com/root.json", 
+  "type": "object", 
+  "title": "The Root Schema", 
+  "required": [
+    "TotalSeats", 
+    "FlightNumber", 
+    "Destination", 
+    "AvailableSeats", 
+    "Price", 
+    "FlightName", 
+    "SourceLocation", 
+    "Date"
+  ], 
+  "properties": {
+    "TotalSeats": {
+      "$id": "#/properties/TotalSeats", 
+      "type": "string", 
+      "title": "The Totalseats Schema", 
+      "default": "", 
+      "examples": [
+        "100"
+      ], 
+      "pattern": "^(.*)$"
+    }, 
+    "FlightNumber": {
+      "$id": "#/properties/FlightNumber", 
+      "type": "string", 
+      "title": "The Flightnumber Schema", 
+      "default": "", 
+      "examples": [
+        "1234"
+      ], 
+      "pattern": "^(.*)$"
+    }, 
+    "Destination": {
+      "$id": "#/properties/Destination", 
+      "type": "string", 
+      "title": "The Destination Schema", 
+      "default": "", 
+      "examples": [
+        "Australia"
+      ], 
+      "pattern": "^(.*)$"
+    }, 
+    "AvailableSeats": {
+      "$id": "#/properties/AvailableSeats", 
+      "type": "string", 
+      "title": "The Availableseats Schema", 
+      "default": "", 
+      "examples": [
+        "2"
+      ], 
+      "pattern": "^(.*)$"
+    }, 
+    "Price": {
+      "$id": "#/properties/Price", 
+      "type": "string", 
+      "title": "The Price Schema", 
+      "default": "", 
+      "examples": [
+        "38000"
+      ], 
+      "pattern": "^(.*)$"
+    }, 
+    "FlightName": {
+      "$id": "#/properties/FlightName", 
+      "type": "string", 
+      "title": "The Flightname Schema", 
+      "default": "", 
+      "examples": [
+        "Air India"
+      ], 
+      "pattern": "^(.*)$"
+    }, 
+    "SourceLocation": {
+      "$id": "#/properties/SourceLocation", 
+      "type": "string", 
+      "title": "The Sourcelocation Schema", 
+      "default": "", 
+      "examples": [
+        "Chennai"
+      ], 
+      "pattern": "^(.*)$"
+    }, 
+    "Date": {
+      "$id": "#/properties/Date", 
+      "type": "string", 
+      "title": "The Date Schema", 
+      "default": "", 
+      "examples": [
+        "2018-08-20 11:30:00.0"
+      ], 
+      "pattern": "^(.*)$"
+    }
+  }
+}

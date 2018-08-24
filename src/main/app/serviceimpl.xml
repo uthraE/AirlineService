@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
+    <sub-flow name="getAirlinesSub_Flow">
+        <logger message="Get Airline Details !!!!!" level="INFO" doc:name="Logger"/>
+        <db:select config-ref="MySQL_Configuration" doc:name="Database">
+            <db:parameterized-query><![CDATA[SELECT * FROM Flights_Data]]></db:parameterized-query>
+        </db:select>
+        <set-payload value="#[payload]" doc:name="Set Payload"/>
+        <set-variable variableName="price" value="#[message.inboundProperties.'http.query.params'.price]" doc:name="Variable"/>
+    </sub-flow>
+    <sub-flow name="searchAirlinesSub_Flow">
+        <message-properties-transformer doc:name="Message Properties" scope="invocation">
+            <add-message-property key="sortBy" value="#[message.inboundProperties.'http.query.params'.sortBy]" />
+            <add-message-property key="dst" value="#[message.inboundProperties.'http.query.params'.dst]"/>
+            <add-message-property key="fName" value="#[message.inboundProperties.'http.query.params'.fName]"/>
+            <add-message-property key="fNo" value="#[message.inboundProperties.'http.query.params'.fNo]"/>
+            <add-message-property key="src" value="#[message.inboundProperties.'http.query.params'.src]"/>
+        </message-properties-transformer>
+        <component class="flightservice.SearchPayload" doc:name="Java"/>
+        <set-payload value="#[payload]" doc:name="Set Payload"/>
+        <db:select config-ref="MySQL_Configuration" doc:name="Database">
+            <db:dynamic-query><![CDATA[#[payload]]]></db:dynamic-query>
+        </db:select>
+        <set-payload value="#[payload]" doc:name="Set Payload"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <logger message="----  #[payload]" level="INFO" doc:name="Logger"/>
+        <dw:transform-message doc:name="Transform Message" metadata:id="e128f70c-2629-4ff8-ba1a-de13d222f184">
+            <dw:input-payload doc:sample="examples\sampleResponse.json" mimeType="application/json"/>
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+payload map ((payload01 , indexOfPayload01) -> {
+	TotalSeats: payload01.TotalSeats,
+	FlightNumber: payload01.FlightNumber,
+	Destination: payload01.Destination,
+	AvailableSeats: payload01.AvailableSeats,
+	Price: payload01.Price,
+	FlightName: payload01.FlightName,
+	SourceLocation: payload01.SourceLocation,
+	Date: payload01.Date
+}) orderBy $.Price ]]></dw:set-payload>
+        </dw:transform-message>
+     </sub-flow>
+    <sub-flow name="bookAirlinesSub_Flow">
+         <message-properties-transformer scope="invocation" doc:name="Message Properties">
+            <add-message-property key="source" value="#[json:'source']"/>
+            <add-message-property key="destination" value="#[json:'destination']"/>
+            <add-message-property key="flightNumber" value="#[json:'flightNumber']"/>
+            <add-message-property key="flightName" value="#[json:'flightName']"/>
+            <add-message-property key="requestedSeats" value="#[json:'requestedSeats']"/>
+            <add-message-property key="date" value="#[json:'date']"/>
+        </message-properties-transformer>
+        <set-payload value="SELECT * FROM Flights_Data Where SourceLocation='#[flowVars.source]' and Destination='#[flowVars.destination]'
+and FlightNumber='#[flowVars.flightNumber]' and 
+Date='#[flowVars.date]'" doc:name="Set Payload"/>
+        <db:select config-ref="MySQL_Configuration" doc:name="Database">
+            <db:dynamic-query><![CDATA[#[payload]]]></db:dynamic-query>
+        </db:select>
+        <choice doc:name="Choice">
+            <when expression="#[payload.size() != 0]">
+                <set-variable variableName="availableSeats" value="#[payload[0].'AvailableSeats']" doc:name="Variable"/>
+                <component class="flightservice.SeatValidation" doc:name="Java"/>
+                <set-payload value="UPDATE mylab.Flights_Data SET AvailableSeats = '#[flowVars.finalSeatCount]' WHERE  FlightNumber='#[flowVars.flightNumber]' and Date='#[flowVars.date]'" doc:name="Set Payload"/>
+                <db:update config-ref="MySQL_Configuration" doc:name="Database">
+                    <db:dynamic-query><![CDATA[#[payload]]]></db:dynamic-query>
+                </db:update>
+                <set-payload value="[ { &quot;messgage&quot; : &quot;Ticket booked successfully!!!!&quot; } ]" doc:name="Set Payload"/>
+            </when>
+            <otherwise>
+                <set-payload value="[ 
+{ &quot;messgage&quot; : &quot;No results found!!!!&quot;
+}
+]" doc:name="Set Payload"/>
+            </otherwise>
+        </choice>
+     </sub-flow>
+    
+</mule>

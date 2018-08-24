@@ -1,0 +1,77 @@
+{
+  "definitions": {}, 
+  "$schema": "http://json-schema.org/draft-07/schema#", 
+  "$id": "http://example.com/root.json", 
+  "type": "object", 
+  "title": "The Root Schema", 
+  "required": [
+    "source", 
+    "destination", 
+    "flightNumber", 
+    "flightName", 
+    "date", 
+    "requestedSeats"
+  ], 
+  "properties": {
+    "source": {
+      "$id": "#/properties/source", 
+      "type": "string", 
+      "title": "The Source Schema", 
+      "default": "", 
+      "examples": [
+        "Chennai"
+      ], 
+      "pattern": "^(.*)$"
+    }, 
+    "destination": {
+      "$id": "#/properties/destination", 
+      "type": "string", 
+      "title": "The Destination Schema", 
+      "default": "", 
+      "examples": [
+        "Australia"
+      ], 
+      "pattern": "^(.*)$"
+    }, 
+    "flightNumber": {
+      "$id": "#/properties/flightNumber", 
+      "type": "string", 
+      "title": "The Flightnumber Schema", 
+      "default": "", 
+      "examples": [
+        "445777"
+      ], 
+      "pattern": "^(.*)$"
+    }, 
+    "flightName": {
+      "$id": "#/properties/flightName", 
+      "type": "string", 
+      "title": "The Flightname Schema", 
+      "default": "", 
+      "examples": [
+        "Emirates"
+      ], 
+      "pattern": "^(.*)$"
+    }, 
+    "date": {
+      "$id": "#/properties/date", 
+      "type": "string", 
+      "title": "The Date Schema", 
+      "default": "", 
+      "examples": [
+        "2018-08-15 05:00:00.0"
+      ], 
+      "pattern": "^(.*)$"
+    }, 
+    "requestedSeats": {
+      "$id": "#/properties/requestedSeats", 
+      "type": "string", 
+      "title": "The Requestedseats Schema", 
+      "default": "", 
+      "examples": [
+        "1"
+      ], 
+      "pattern": "^(.*)$"
+    }
+  }
+}
